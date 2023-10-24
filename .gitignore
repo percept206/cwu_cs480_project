@@ -1,0 +1,4 @@
+# to prevent leaking our API key: .env is the file containing it API key, should be just one line API_KEY = 'API_KEY_GOES_HERE',
+.env
+# in the same directory we have a tickers.csv put in it all the tickers you want to use for the app
+tickers.csv
