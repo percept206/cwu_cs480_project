@@ -21,9 +21,7 @@ reader = csv.reader(tickercsv, delimiter=',', quotechar='"')
 tickers = reader.__next__()
 tickercsv.close()
 
-
-def summary_view(ticker):
-
+def valid_ticker(ticker):
     valid_ticker = False
 
     for x in range(len(tickers)):
@@ -31,8 +29,11 @@ def summary_view(ticker):
         if ticker == tickers[x]:
             valid_ticker = True
 
+    return valid_ticker
 
-    if not valid_ticker:
+def summary_view(ticker):
+
+    if not valid_ticker(ticker): # if not valid_in u think like in java: if !valid_in
 
         print(ticker + " not in set of valid tickers")
         raise Exception('Invalid Ticker')
@@ -41,26 +42,89 @@ def summary_view(ticker):
     data = r.json()
 
     print(data)
+    return data
 
 
 def detailed_view(ticker):
-    pass
+
+    if not valid_ticker(ticker):
+        print(ticker + " not in set of valid tickers")
+        raise Exception('Invalid Ticker')
 
 
+    r = requests.get(API_URL + 'function=INCOME_STATEMENT&symbol=' + ticker + "&apikey=" + API_KEY)
+    income_statement = r.json()
+
+    r = requests.get(API_URL + 'function=BALANCE_SHEET&symbol=' + ticker + "&apikey=" + API_KEY)
+    balance_sheet = r.json()
+
+    r = requests.get(API_URL + 'function=CASH_FLOW&symbol=' + ticker + "&apikey=" + API_KEY)
+    cash_flow = r.json()
+
+    details = (income_statement, balance_sheet, cash_flow)
+    print(details)
+
+def intraday_hist(ticker):
+
+    if not valid_ticker(ticker):
+        print(ticker + " not in set of valid tickers")
+        raise Exception('Invalid Ticker')
+
+    r = requests.get(API_URL + 'function=TIME_SERIES_INTRADAY&symbol=' + ticker + "&apikey=" + API_KEY)
+    data = r.json()
+
+    print(data)
+    return data
 def daily_hist(ticker):
-    pass
 
+    if not valid_ticker(ticker):
+        print(ticker + " not in set of valid tickers")
+        raise Exception('Invalid Ticker')
+
+    r = requests.get(API_URL + 'function=TIME_SERIES_DAILY&symbol=' + ticker + "&apikey=" + API_KEY)
+    data = r.json()
+
+    print(data)
+    return data
 
 def weekly_hist(ticker):
-    pass
+
+    if not valid_ticker(ticker):
+        print(ticker + " not in set of valid tickers")
+        raise Exception('Invalid Ticker')
+
+    r = requests.get(API_URL + 'function=TIME_SERIES_WEEKLY&symbol=' + ticker + "&apikey=" + API_KEY)
+    data = r.json()
+
+    print(data)
+    return data
 
 
 def monthly_hist(ticker):
-    pass
+
+    if not valid_ticker(ticker):
+        print(ticker + " not in set of valid tickers")
+        raise Exception('Invalid Ticker')
+
+
+    r = requests.get(API_URL + 'function=TIME_SERIES_MONTHLY&symbol=' + ticker + "&apikey=" + API_KEY)
+    data = r.json()
+
+    print(data)
+    return data
 
 
 def yearly_hist(ticker):
-    pass
+
+    if not valid_ticker(ticker):
+        print(ticker + " not in set of valid tickers")
+        raise Exception('Invalid Ticker')
+
+    r = requests.get(API_URL + 'function=TIME_SERIES_YEARLY&symbol=' + ticker + "&apikey=" + API_KEY)
+    data = r.json()
+
+    print(data)
+    return data
 
 
 def main(type, ticker):
@@ -70,6 +134,8 @@ def main(type, ticker):
             summary_view(ticker)
         case 'd':
             detailed_view(ticker)
+        case 'gi':
+            intraday_hist(ticker)
         case 'gd':
             daily_hist(ticker)
         case 'gw':
