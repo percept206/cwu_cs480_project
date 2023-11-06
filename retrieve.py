@@ -10,7 +10,7 @@ import sys
 import io
 import csv
 
-# read API key for usage from locally stored ./.env file,
+# read API key for usage from locally stored ./.env file,+
 API_KEY = open(".env", 'r', encoding='utf-8').readline()
 API_URL = 'https://www.alphavantage.co/query?'
 
@@ -20,6 +20,8 @@ tickercsv = open('tickers.csv', newline='')
 reader = csv.reader(tickercsv, delimiter=',', quotechar='"')
 tickers = reader.__next__()
 tickercsv.close()
+
+
 
 def valid_ticker(ticker):
     valid_ticker = False
@@ -62,7 +64,7 @@ def detailed_view(ticker):
     cash_flow = r.json()
 
     details = (income_statement, balance_sheet, cash_flow)
-    print(details)
+    print("Income Statement: ", cash_flow)
 
 def intraday_hist(ticker):
 
@@ -73,8 +75,28 @@ def intraday_hist(ticker):
     r = requests.get(API_URL + 'function=TIME_SERIES_INTRADAY&symbol=' + ticker + "&apikey=" + API_KEY)
     data = r.json()
 
-    print(data)
-    return data
+    dates = []
+    opens = []
+    highs = []
+    lows = []
+    closes = []
+    vol = []
+
+
+    for date in data['Weekly Time Series']:
+        dates.append(date)
+
+    for value in data['Weekly Time Series'].values():
+        opens.append(value['1. open'])
+        highs.append(value['2. high'])
+        lows.append(value['3. low'])
+        closes.append(value['4. close'])
+        vol.append(['5. volume'])
+
+    intervals = [dates, opens, highs, lows, closes, vol]
+
+    return intervals
+
 def daily_hist(ticker):
 
     if not valid_ticker(ticker):
@@ -84,8 +106,27 @@ def daily_hist(ticker):
     r = requests.get(API_URL + 'function=TIME_SERIES_DAILY&symbol=' + ticker + "&apikey=" + API_KEY)
     data = r.json()
 
-    print(data)
-    return data
+    dates = []
+    opens = []
+    highs = []
+    lows = []
+    closes = []
+    vol = []
+
+
+    for date in data['Weekly Time Series']:
+        dates.append(date)
+
+    for value in data['Weekly Time Series'].values():
+        opens.append(value['1. open'])
+        highs.append(value['2. high'])
+        lows.append(value['3. low'])
+        closes.append(value['4. close'])
+        vol.append(['5. volume'])
+
+    intervals = [dates, opens, highs, lows, closes, vol]
+
+    return intervals
 
 def weekly_hist(ticker):
 
@@ -96,8 +137,27 @@ def weekly_hist(ticker):
     r = requests.get(API_URL + 'function=TIME_SERIES_WEEKLY&symbol=' + ticker + "&apikey=" + API_KEY)
     data = r.json()
 
-    print(data)
-    return data
+    dates = []
+    opens = []
+    highs = []
+    lows = []
+    closes = []
+    vol = []
+
+
+    for date in data['Weekly Time Series']:
+        dates.append(date)
+
+    for value in data['Weekly Time Series'].values():
+        opens.append(value['1. open'])
+        highs.append(value['2. high'])
+        lows.append(value['3. low'])
+        closes.append(value['4. close'])
+        vol.append(['5. volume'])
+
+    intervals = [dates, opens, highs, lows, closes, vol]
+
+    return intervals
 
 
 def monthly_hist(ticker):
@@ -110,8 +170,27 @@ def monthly_hist(ticker):
     r = requests.get(API_URL + 'function=TIME_SERIES_MONTHLY&symbol=' + ticker + "&apikey=" + API_KEY)
     data = r.json()
 
-    print(data)
-    return data
+    dates = []
+    opens = []
+    highs = []
+    lows = []
+    closes = []
+    vol = []
+
+
+    for date in data['Weekly Time Series']:
+        dates.append(date)
+
+    for value in data['Weekly Time Series'].values():
+        opens.append(value['1. open'])
+        highs.append(value['2. high'])
+        lows.append(value['3. low'])
+        closes.append(value['4. close'])
+        vol.append(['5. volume'])
+
+    intervals = [dates, opens, highs, lows, closes, vol]
+
+    return intervals
 
 
 def yearly_hist(ticker):
@@ -123,8 +202,27 @@ def yearly_hist(ticker):
     r = requests.get(API_URL + 'function=TIME_SERIES_YEARLY&symbol=' + ticker + "&apikey=" + API_KEY)
     data = r.json()
 
-    print(data)
-    return data
+    dates = []
+    opens = []
+    highs = []
+    lows = []
+    closes = []
+    vol = []
+
+
+    for date in data['Weekly Time Series']:
+        dates.append(date)
+
+    for value in data['Weekly Time Series'].values():
+        opens.append(value['1. open'])
+        highs.append(value['2. high'])
+        lows.append(value['3. low'])
+        closes.append(value['4. close'])
+        vol.append(['5. volume'])
+
+    intervals = [dates, opens, highs, lows, closes, vol]
+
+    return intervals
 
 
 def main(type, ticker):
