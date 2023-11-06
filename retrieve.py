@@ -35,7 +35,7 @@ def valid_ticker(ticker):
 
 def summary_view(ticker):
 
-    if not valid_ticker(ticker): # if not valid_in u think like in java: if !valid_in
+    if not valid_ticker(ticker): 
 
         print(ticker + " not in set of valid tickers")
         raise Exception('Invalid Ticker')
