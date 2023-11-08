@@ -87,11 +87,11 @@ def intraday_hist(ticker):
         dates.append(date)
 
     for value in data['Weekly Time Series'].values():
-        opens.append(value['1. open'])
-        highs.append(value['2. high'])
-        lows.append(value['3. low'])
-        closes.append(value['4. close'])
-        vol.append(['5. volume'])
+        opens.append(float(value['1. open']))
+        highs.append(float(value['2. high']))
+        lows.append(float(value['3. low']))
+        closes.append(float(value['4. close']))
+        vol.append((int(value['5. volume'])))
 
     intervals = [dates, opens, closes, lows, highs, vol]
 
@@ -114,15 +114,15 @@ def daily_hist(ticker):
     vol = []
 
 
-    for date in data['Daily Time Series']:
+    for date in data['Time Series (Daily)']:
         dates.append(date)
 
-    for value in data['Daily Time Series'].values():
-        opens.append(value['1. open'])
-        highs.append(value['2. high'])
-        lows.append(value['3. low'])
-        closes.append(value['4. close'])
-        vol.append(['5. volume'])
+    for value in data['Time Series (Daily)'].values():
+        opens.append(float(value['1. open']))
+        highs.append(float(value['2. high']))
+        lows.append(float(value['3. low']))
+        closes.append(float(value['4. close']))
+        vol.append((int(value['5. volume'])))
 
     intervals = [dates, opens, closes, lows, highs, vol]
 
@@ -149,11 +149,11 @@ def weekly_hist(ticker):
         dates.append(date)
 
     for value in data['Weekly Time Series'].values():
-        opens.append(value['1. open'])
-        highs.append(value['2. high'])
-        lows.append(value['3. low'])
-        closes.append(value['4. close'])
-        vol.append(['5. volume'])
+        opens.append(float(value['1. open']))
+        highs.append(float(value['2. high']))
+        lows.append(float(value['3. low']))
+        closes.append(float(value['4. close']))
+        vol.append((int(value['5. volume'])))
 
     intervals = [dates, opens, closes, lows, highs, vol]
 
@@ -182,11 +182,11 @@ def monthly_hist(ticker):
         dates.append(date)
 
     for value in data['Monthly Time Series'].values():
-        opens.append(value['1. open'])
-        highs.append(value['2. high'])
-        lows.append(value['3. low'])
-        closes.append(value['4. close'])
-        vol.append(['5. volume'])
+        opens.append(float(value['1. open']))
+        highs.append(float(value['2. high']))
+        lows.append(float(value['3. low']))
+        closes.append(float(value['4. close']))
+        vol.append((int(value['5. volume'])))
 
     intervals = [dates, opens, closes, lows, highs, vol]
 
@@ -195,38 +195,6 @@ def monthly_hist(ticker):
     print(highs)
     print(lows)
     print(closes)
-    return intervals
-
-
-def yearly_hist(ticker):
-
-    if not valid_ticker(ticker):
-        print(ticker + " not in set of valid tickers")
-        raise Exception('Invalid Ticker')
-
-    r = requests.get(API_URL + 'function=TIME_SERIES_YEARLY&symbol=' + ticker + "&apikey=" + API_KEY)
-    data = r.json()
-
-    dates = []
-    opens = []
-    highs = []
-    lows = []
-    closes = []
-    vol = []
-
-
-    for date in data['Yearly Time Series']:
-        dates.append(date)
-
-    for value in data['Yearly Time Series'].values():
-        opens.append(value['1. open'])
-        highs.append(value['2. high'])
-        lows.append(value['3. low'])
-        closes.append(value['4. close'])
-        vol.append(['5. volume'])
-
-    intervals = [dates, opens, closes, lows, highs, vol]
-
     return intervals
 
 
