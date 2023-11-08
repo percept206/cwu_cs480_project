@@ -93,7 +93,7 @@ def intraday_hist(ticker):
         closes.append(value['4. close'])
         vol.append(['5. volume'])
 
-    intervals = [dates, opens, highs, lows, closes, vol]
+    intervals = [dates, opens, closes, lows, highs, vol]
 
     return intervals
 
@@ -114,17 +114,17 @@ def daily_hist(ticker):
     vol = []
 
 
-    for date in data['Weekly Time Series']:
+    for date in data['Daily Time Series']:
         dates.append(date)
 
-    for value in data['Weekly Time Series'].values():
+    for value in data['Daily Time Series'].values():
         opens.append(value['1. open'])
         highs.append(value['2. high'])
         lows.append(value['3. low'])
         closes.append(value['4. close'])
         vol.append(['5. volume'])
 
-    intervals = [dates, opens, highs, lows, closes, vol]
+    intervals = [dates, opens, closes, lows, highs, vol]
 
     return intervals
 
@@ -155,7 +155,7 @@ def weekly_hist(ticker):
         closes.append(value['4. close'])
         vol.append(['5. volume'])
 
-    intervals = [dates, opens, highs, lows, closes, vol]
+    intervals = [dates, opens, closes, lows, highs, vol]
 
     return intervals
 
@@ -178,18 +178,23 @@ def monthly_hist(ticker):
     vol = []
 
 
-    for date in data['Weekly Time Series']:
+    for date in data['Monthly Time Series']:
         dates.append(date)
 
-    for value in data['Weekly Time Series'].values():
+    for value in data['Monthly Time Series'].values():
         opens.append(value['1. open'])
         highs.append(value['2. high'])
         lows.append(value['3. low'])
         closes.append(value['4. close'])
         vol.append(['5. volume'])
 
-    intervals = [dates, opens, highs, lows, closes, vol]
+    intervals = [dates, opens, closes, lows, highs, vol]
 
+    print(dates)
+    print(opens)
+    print(highs)
+    print(lows)
+    print(closes)
     return intervals
 
 
@@ -210,17 +215,17 @@ def yearly_hist(ticker):
     vol = []
 
 
-    for date in data['Weekly Time Series']:
+    for date in data['Yearly Time Series']:
         dates.append(date)
 
-    for value in data['Weekly Time Series'].values():
+    for value in data['Yearly Time Series'].values():
         opens.append(value['1. open'])
         highs.append(value['2. high'])
         lows.append(value['3. low'])
         closes.append(value['4. close'])
         vol.append(['5. volume'])
 
-    intervals = [dates, opens, highs, lows, closes, vol]
+    intervals = [dates, opens, closes, lows, highs, vol]
 
     return intervals
 
