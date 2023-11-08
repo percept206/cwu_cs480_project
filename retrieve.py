@@ -213,8 +213,7 @@ def main(type, ticker):
             weekly_hist(ticker)
         case 'gm':
             monthly_hist(ticker)
-        case 'gy':
-            yearly_hist(ticker)
+
 
 if __name__ == "__main__":
 
