@@ -2,11 +2,11 @@ import dearpygui.dearpygui as dpg
 import retrieve as ret
 import time
 
+stock = 'NVDA'  # Stores the currently selected stock
 
 dpg.create_context()
 
-hist_data = ret.daily_hist('NVDA')
-
+hist_data = ret.daily_hist(stock)
 hist_data[0].reverse()
 hist_data[1].reverse()
 hist_data[2].reverse()
@@ -16,18 +16,50 @@ hist_data[5].reverse()
 
 date_to_epoch = []
 
-DAY_OFFSET = -25200 # offset to fix date formatting
+DAY_OFFSET = -25200  # Offset to fix date formatting
 
 for x in hist_data[0]:
     date_to_epoch.append(int(time.mktime(time.strptime(x, "%Y-%m-%d"))) + DAY_OFFSET)
-print(date_to_epoch)
 
+
+# Updates graph w/ new stock info
+def update_graph(sender):
+    u_hist_data = ret.daily_hist(sender)
+    u_hist_data[0].reverse()
+    u_hist_data[1].reverse()
+    u_hist_data[2].reverse()
+    u_hist_data[3].reverse()
+    u_hist_data[4].reverse()
+    u_hist_data[5].reverse()
+    u_date_to_epoch = []
+    for l in u_hist_data[0]:
+        u_date_to_epoch.append(int(time.mktime(time.strptime(l, "%Y-%m-%d"))) + DAY_OFFSET)
+    dpg.configure_item("candle_graph", dates=u_date_to_epoch, opens=u_hist_data[1], closes=u_hist_data[2],
+                       lows=u_hist_data[3], highs=u_hist_data[4], label=sender)
+
+
+'''
+#Updates summary view w/ new stock info
+def update_summ() {
+
+}
+'''
+
+
+# Updates the currently selected stock
+def update_stock(sender):
+    update_graph(sender)
+    # update_summ()
+
+
+# Opens detailed view
 def open_det_view():
     with dpg.window(label="Detailed View", popup=True, autosize=False, no_resize=True, no_move=True,
-                    pos=[int(dpg.get_viewport_client_width()/4), int(dpg.get_viewport_client_height()/4)]):
+                    pos=[int(dpg.get_viewport_client_width() / 4), int(dpg.get_viewport_client_height() / 4)]):
         with dpg.table(header_row=True, borders_outerH=True, borders_innerV=True, borders_innerH=True,
                        borders_outerV=True,
-                       width=int(dpg.get_viewport_client_width()/2), height=int(dpg.get_viewport_client_height()/2)):
+                       width=int(dpg.get_viewport_client_width() / 2),
+                       height=int(dpg.get_viewport_client_height() / 2)):
 
             # use add_table_column to add columns to the table,
             # table columns use child slot 0
@@ -43,23 +75,30 @@ def open_det_view():
                     for j in range(0, 3):
                         dpg.add_text(f"Row{i} Column{j}")
 
+
 with dpg.window(tag="Home"):
     # create plot
     with dpg.plot(label="Candle Series (Daily)", height=400, width=-1):
 
         dpg.add_plot_legend()
         xaxis = dpg.add_plot_axis(dpg.mvXAxis, label="Day", time=True)
-        with dpg.plot_axis(dpg.mvYAxis, label="USD"):
-
+        with dpg.plot_axis(dpg.mvYAxis, label="USD", tag="candle_y"):
             dpg.add_candle_series(date_to_epoch, hist_data[1], hist_data[2], hist_data[3], hist_data[4],
-            label="NVDA", weight=0.3,tooltip=True, time_unit=dpg.mvTimeUnit_Day)
+                                  label="NVDA", weight=0.3, tooltip=True, time_unit=dpg.mvTimeUnit_Day,
+                                  parent="candle_y", tag="candle_graph")
 
             dpg.fit_axis_data(dpg.top_container_stack())
 
         dpg.fit_axis_data(xaxis)
 
-    #dpg.add_menu_bar()
-    #dpg.add_same_line()
+    # Doesn't work as intended, will try to find out how to get a proper menu
+    with dpg.menu_bar():
+        with dpg.menu(label="Tickers"):
+            # Loop through tickers and add them to the menu
+            dpg.add_menu_item(label="NVDA", tag="NVDA", callback=update_stock)
+            dpg.add_menu_item(label="NFLX", tag="NFLX", callback=update_stock)
+
+    # dpg.add_same_line()
     dpg.add_button(label="Detailed View", callback=open_det_view, height=40, width=100)
 
     with dpg.table(header_row=True, borders_outerH=True, borders_innerV=True, borders_innerH=True, borders_outerV=True):
@@ -83,4 +122,6 @@ dpg.setup_dearpygui()
 dpg.show_viewport()
 dpg.set_primary_window("Home", True)
 dpg.start_dearpygui()
+while dpg.is_dearpygui_running():
+    dpg.render_dearpygui_frame()
 dpg.destroy_context()
