@@ -178,6 +178,7 @@ def monthly_hist(ticker):
     vol = []
 
 
+    print(data)
     for date in data['Monthly Time Series']:
         dates.append(date)
 

@@ -3,6 +3,7 @@ import retrieve as ret
 import time
 
 stock = 'NVDA'  # Stores the currently selected stock
+summary_view_fields = ["Industry", "Sector", "52 wk. High", "52 wk. Low", "Market Cap", "EPS", "EV to Revenue","EBITDA","P/E Ratio", "PEG ratio", "Dividend Per Share", "Beta", 'Revenue', "ReturnOnAssets TTM", "ReturnOnEquity TTM"]
 
 dpg.create_context()
 
@@ -19,7 +20,12 @@ date_to_epoch = []
 DAY_OFFSET = -25200  # Offset to fix date formatting
 
 for x in hist_data[0]:
-    date_to_epoch.append(int(time.mktime(time.strptime(x, "%Y-%m-%d"))) + DAY_OFFSET)
+
+    epoch = int(time.mktime(time.strptime(x, "%Y-%m-%d"))) + DAY_OFFSET
+    if epoch > 1699142400:
+        epoch -= 3600
+
+    date_to_epoch.append(epoch)
 
 
 # Updates graph w/ new stock info
@@ -112,10 +118,12 @@ with dpg.window(tag="Home"):
         # add_table_next_column will jump to the next row
         # once it reaches the end of the columns
         # table next column use slot 1
-        for i in range(0, 4):
+        counter = 0
+        for i in range(0, 5):
             with dpg.table_row():
                 for j in range(0, 3):
-                    dpg.add_text(f"Row{i} Column{j}")
+                    dpg.add_text(f"{summary_view_fields[counter]} Column{j}")
+                    counter += 1
 
 dpg.create_viewport(title='Group A App', width=1080, height=720)
 dpg.setup_dearpygui()
