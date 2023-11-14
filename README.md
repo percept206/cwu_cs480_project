@@ -1,6 +1,6 @@
 # cwu_cs480_project
 
-An application for viewing fundamental ahd historical price data
+An application for viewing fundamental and historical price data
 on a selected set of stocks 
 
 ## Dependencies:
