@@ -46,17 +46,42 @@ def update_graph(sender):
                        lows=u_hist_data[3], highs=u_hist_data[4], label=sender)
 
 
-
+'''
 #Updates summary view w/ new stock info
-def update_summ(sender):
-    print("updating")
+def update_summ() {
 
+}
+'''
 
 
 # Updates the currently selected stock
 def update_stock(sender):
     update_graph(sender)
-    update_summ(sender)
+    # update_summ()
+
+
+# Opens detailed view
+def open_det_view():
+    with dpg.window(label="Detailed View", popup=True, autosize=False, no_resize=True, no_move=True,
+                    pos=[int(dpg.get_viewport_client_width() / 4), int(dpg.get_viewport_client_height() / 4)]):
+        with dpg.table(header_row=True, borders_outerH=True, borders_innerV=True, borders_innerH=True,
+                       borders_outerV=True,
+                       width=int(dpg.get_viewport_client_width() / 2),
+                       height=int(dpg.get_viewport_client_height() / 2)):
+
+            # use add_table_column to add columns to the table,
+            # table columns use child slot 0
+            dpg.add_table_column()
+            dpg.add_table_column()
+            dpg.add_table_column()
+
+            # add_table_next_column will jump to the next row
+            # once it reaches the end of the columns
+            # table next column use slot 1
+            for i in range(0, 4):
+                with dpg.table_row():
+                    for j in range(0, 3):
+                        dpg.add_text(f"Row{i} Column{j}")
 
 
 with dpg.window(tag="Home"):
@@ -81,11 +106,14 @@ with dpg.window(tag="Home"):
             for ticker in ret.tickers:
                 dpg.add_menu_item(label=ticker, tag=ticker, callback=update_stock)
 
-    with dpg.table(borders_outerH=True, borders_innerV=True, borders_innerH=True, borders_outerV=True):
+    # dpg.add_same_line()
+    dpg.add_button(label="Detailed View", callback=open_det_view, height=40, width=100)
+
+    with dpg.table(header_row=True, borders_outerH=True, borders_innerV=True, borders_innerH=True, borders_outerV=True):
 
         # use add_table_column to add columns to the table,
         # table columns use child slot 0
-        for x in range(4):
+        for x in range(6):
             dpg.add_table_column()
 
 
@@ -94,33 +122,19 @@ with dpg.window(tag="Home"):
         # table next column use slot 1
         counter = 0
         place_field = True
-        for i in range(0, 12):
+        for i in range(0, 8):
             with dpg.table_row():
-                for j in range(0, 4):
+                for j in range(0, 6):
                     if (place_field == True and counter < 23):
                         dpg.add_text(f"{summary_view_fields[counter]}")
                         place_field = False
                     elif (counter < 23):
                         # amount of valid fields
-                        dpg.add_text(f"{details_values[counter-1]}")
+                        dpg.add_text(f"{details_values[i+j]}")
                         place_field = True
-                        counter += 1
                     else:
                         dpg.add_text("")
-
-
-'''# table columns use child slot 0
-            dpg.add_table_column()
-            dpg.add_table_column()
-            dpg.add_table_column()
-
-            # add_table_next_column will jump to the next row
-            # once it reaches the end of the columns
-            # table next column use slot 1
-            for i in range(0, 4):
-                with dpg.table_row():
-                    for j in range(0, 3):
-                        dpg.add_text(f"Row{i} Column{j}")'''
+                    counter += 1
 
 
 dpg.create_viewport(title='Group A App', width=1080, height=720)
