@@ -43,8 +43,36 @@ def summary_view(ticker):
     r = requests.get(API_URL + 'function=OVERVIEW&symbol=' + ticker + "&apikey=" + API_KEY)
     data = r.json()
 
-    print(data)
-    return data
+    values = []
+
+    """
+    this is a inefficient implementation 
+    """
+    values.append(float(data['52WeekHigh']))
+    values.append(float(data['52WeekLow']))
+    values.append(float(data['Beta']))
+    values.append(float(data['PriceToBookRatio']))
+    values.append(float(data['DividendPerShare']))
+    values.append(float(data['DividendYield']))
+    values.append(float(data['MarketCapitalization']))
+    values.append(int(data['SharesOutstanding']))
+    values.append(float(data['EPS']))
+    values.append(float(data['QuarterlyEarningsGrowthYOY']))
+    values.append(float(data['RevenuePerShareTTM']))
+    values.append(float(data['RevenueTTM']))
+    values.append(float(data['QuarterlyRevenueGrowthYOY']))
+    values.append(float(data['EVToRevenue']))
+    values.append(float(data['GrossProfitTTM']))
+    values.append(float(data['PriceToSalesRatioTTM']))
+    values.append(float(data['EBITDA']))
+    values.append(float(data['EVToEBITDA']))
+    values.append(float(data['ProfitMargin']))
+    values.append(float(data['OperatingMarginTTM']))
+    values.append(float(data['ReturnOnEquityTTM']))
+    values.append(float(data['PERatio']))
+    values.append(float(data['AnalystTargetPrice']))
+
+    return values
 
 
 def detailed_view(ticker):

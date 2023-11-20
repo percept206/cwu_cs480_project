@@ -3,7 +3,7 @@ import retrieve as ret
 import time
 
 stock = 'NVDA'  # Stores the currently selected stock
-summary_view_fields = ["Industry", "Sector", "52 wk. High", "52 wk. Low", "Market Cap", "EPS", "EV to Revenue","EBITDA","P/E Ratio", "PEG ratio", "Dividend Per Share", "Beta", 'Revenue', "ReturnOnAssets TTM", "ReturnOnEquity TTM"]
+summary_view_fields = ["52WeekHigh", "52WeekLow", "Beta", "PriceToBookRatio", "DividendPerShare", "DividendYield", "MarketCapitalization","SharesOutstanding","EPS", "QuarterlyEarningsGrowthYOY", "RevenuePerShareTTM", "RevenueTTM", 'QuarterlyRevenueGrowthYOY', "EVtoRevenue", "GrossProfitTTM", "PriceToSalesRatioTTM", "EBITDA", "EVtoEBITDA", "ProfitMargin", "OperatingMarginTTM", "ReturnOnEquityTTM", "PERatio", "AnalystTargetPrice"]
 
 dpg.create_context()
 
@@ -16,6 +16,8 @@ hist_data[4].reverse()
 hist_data[5].reverse()
 
 date_to_epoch = []
+
+details_values = ret.summary_view(stock)
 
 DAY_OFFSET = -25200  # Offset to fix date formatting
 
@@ -90,7 +92,7 @@ with dpg.window(tag="Home"):
         xaxis = dpg.add_plot_axis(dpg.mvXAxis, label="Day", time=True)
         with dpg.plot_axis(dpg.mvYAxis, label="USD", tag="candle_y"):
             dpg.add_candle_series(date_to_epoch, hist_data[1], hist_data[2], hist_data[3], hist_data[4],
-                                  label="NVDA", weight=0.3, tooltip=True, time_unit=dpg.mvTimeUnit_Day,
+                                  label="NVDA", weight=0.2, tooltip=True, time_unit=dpg.mvTimeUnit_Day,
                                   parent="candle_y", tag="candle_graph")
 
             dpg.fit_axis_data(dpg.top_container_stack())
@@ -101,8 +103,8 @@ with dpg.window(tag="Home"):
     with dpg.menu_bar():
         with dpg.menu(label="Tickers"):
             # Loop through tickers and add them to the menu
-            dpg.add_menu_item(label="NVDA", tag="NVDA", callback=update_stock)
-            dpg.add_menu_item(label="NFLX", tag="NFLX", callback=update_stock)
+            for ticker in ret.tickers:
+                dpg.add_menu_item(label=ticker, tag=ticker, callback=update_stock)
 
     # dpg.add_same_line()
     dpg.add_button(label="Detailed View", callback=open_det_view, height=40, width=100)
@@ -111,19 +113,29 @@ with dpg.window(tag="Home"):
 
         # use add_table_column to add columns to the table,
         # table columns use child slot 0
-        dpg.add_table_column()
-        dpg.add_table_column()
-        dpg.add_table_column()
+        for x in range(6):
+            dpg.add_table_column()
+
 
         # add_table_next_column will jump to the next row
         # once it reaches the end of the columns
         # table next column use slot 1
         counter = 0
-        for i in range(0, 5):
+        place_field = True
+        for i in range(0, 8):
             with dpg.table_row():
-                for j in range(0, 3):
-                    dpg.add_text(f"{summary_view_fields[counter]} Column{j}")
+                for j in range(0, 6):
+                    if (place_field == True & counter < 23):
+                        dpg.add_text(f"{summary_view_fields[counter]}")
+                        place_field = False
+                    elif (counter < 23):
+                        # amount of valid fields
+                        dpg.add_text(f"{details_values[i+j]}")
+                        place_field = True
+                    else:
+                        dpg.add_text("")
                     counter += 1
+
 
 dpg.create_viewport(title='Group A App', width=1080, height=720)
 dpg.setup_dearpygui()
