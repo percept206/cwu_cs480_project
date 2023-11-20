@@ -125,7 +125,7 @@ with dpg.window(tag="Home"):
         for i in range(0, 8):
             with dpg.table_row():
                 for j in range(0, 6):
-                    if (place_field == True & counter < 23):
+                    if (place_field == True and counter < 23):
                         dpg.add_text(f"{summary_view_fields[counter]}")
                         place_field = False
                     elif (counter < 23):
