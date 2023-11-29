@@ -50,18 +50,39 @@ def update_graph(sender):
                        lows=u_hist_data[3], highs=u_hist_data[4], label=sender)
 
 
-'''
-#Updates summary view w/ new stock info
-def update_summ() {
 
-}
-'''
+def clear_table() :
+    for tag in dpg.get_item_children("summ_table")[1]:
+        dpg.delete_item(tag)
+
+
+#Updates summary view w/ new stock info
+def update_summ(sender) :
+    clear_table()
+
+    new_values = ret.summary_view(sender)
+
+    counter = 0
+    place_field = True
+    for i in range(0, 8):
+        with dpg.table_row(parent="summ_table", tag=f"row_{i}"):
+            for j in range(0, 6):
+                if place_field and counter < 23:
+                    dpg.add_text(f"{summary_view_fields[counter]}")
+                    place_field = False
+                elif counter < 23:
+                    # amount of valid fields
+                    dpg.add_text(f"{new_values[counter]}")
+                    place_field = True
+                    counter += 1
+                else:
+                    dpg.add_text("")
 
 
 # Updates the currently selected stock
 def update_stock(sender):
     update_graph(sender)
-    # update_summ()
+    update_summ(sender)
 
 
 # Opens detailed view
@@ -97,6 +118,7 @@ def update_stock(sender):
 with dpg.window(tag="Home"):
     # create plot
     with dpg.plot(label="Candle Series (Daily)", height=400, width=-1):
+        dpg.add_plot_legend()
         xaxis = dpg.add_plot_axis(dpg.mvXAxis, label="Day", time=True)
         with dpg.plot_axis(dpg.mvYAxis, label="USD", tag="candle_y"):
             dpg.add_candle_series(date_to_epoch, hist_data[1], hist_data[2], hist_data[3], hist_data[4],
@@ -114,7 +136,7 @@ with dpg.window(tag="Home"):
             for ticker in ret.tickers:
                 dpg.add_menu_item(label=ticker, tag=ticker, callback=update_stock)
 
-    with dpg.table(header_row=True, borders_outerH=True, borders_innerV=True, borders_innerH=True, borders_outerV=True,
+    with dpg.table(borders_outerH=True, borders_innerV=True, borders_innerH=True, borders_outerV=True,
                    tag="summ_table"):
         # use add_table_column to add columns to the table,
         # table columns use child slot 0
@@ -127,7 +149,7 @@ with dpg.window(tag="Home"):
         counter = 0
         place_field = True
         for i in range(0, 8):
-            with dpg.table_row():
+            with dpg.table_row(parent="summ_table", tag=f"row_{i}"):
                 for j in range(0, 6):
                     if place_field and counter < 23:
                         dpg.add_text(f"{summary_view_fields[counter]}")
