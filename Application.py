@@ -71,8 +71,14 @@ def update_summ(sender) :
                     dpg.add_text(f"{summary_view_fields[counter]}")
                     place_field = False
                 elif counter < 23:
-                    # amount of valid fields
-                    dpg.add_text(f"{new_values[counter]}")
+                    if counter == 5:
+                        dpg.add_text(f"{new_values[counter]:.4%}")
+                    elif counter == 9 or counter == 12:
+                        dpg.add_text(f"{new_values[counter]}%")
+                    elif (counter == 6 or counter == 11 or counter == 14 or counter == 16):
+                        dpg.add_text(format(int(details_values[counter]), "d"))
+                    else:
+                        dpg.add_text(f"{new_values[counter]}")
                     place_field = True
                     counter += 1
                 else:
@@ -122,7 +128,7 @@ with dpg.window(tag="Home"):
         xaxis = dpg.add_plot_axis(dpg.mvXAxis, label="Day", time=True)
         with dpg.plot_axis(dpg.mvYAxis, label="USD", tag="candle_y"):
             dpg.add_candle_series(date_to_epoch, hist_data[1], hist_data[2], hist_data[3], hist_data[4],
-                                  label="NVDA", weight=0.2, tooltip=True, time_unit=dpg.mvTimeUnit_Day,
+                                  label="NVDA", weight=0.15, tooltip=True, time_unit=dpg.mvTimeUnit_Day,
                                   parent="candle_y", tag="candle_graph")
 
             dpg.fit_axis_data(dpg.top_container_stack())
@@ -156,7 +162,14 @@ with dpg.window(tag="Home"):
                         place_field = False
                     elif counter < 23:
                         # amount of valid fields
-                        dpg.add_text(f"{details_values[counter]}")
+                        if counter == 5:
+                            dpg.add_text(f"{details_values[counter]:.4%}")
+                        elif counter == 9 or counter == 12:
+                            dpg.add_text(f"{details_values[counter]}%")
+                        elif (counter == 6 or counter == 11 or counter == 14 or counter == 16):
+                            dpg.add_text(format(int(details_values[counter]), "d" ))
+                        else:
+                            dpg.add_text(f"{details_values[counter]}")
                         place_field = True
                         counter += 1
                     else:
