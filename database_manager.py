@@ -39,7 +39,10 @@ class DatabaseManager:
             self.connection.close()
 
 
-database = "financial_db.db.sql"
+database = "financial_db.db"
 db_manager = DatabaseManager(database)
 
 query = "SELECT cik FROM Company"
+companies = db_manager.query_data(query)
+for company in companies:
+    print(company)
