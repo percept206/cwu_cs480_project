@@ -91,16 +91,20 @@ def update_stock(sender):
     update_summ(sender)
 
 
-# Opens detailed view
-'''def open_landing():
+# Opens landing page
+def open_landing():
     with dpg.window(popup=True, autosize=False, no_resize=True, no_move=True,
                     pos=[int(dpg.get_viewport_client_width() / 4), int(dpg.get_viewport_client_height() / 4)]):
-        with dpg.table(header_row=False, borders_outerH=True, borders_innerV=True, borders_innerH=True,
+        with dpg.table(header_row=True, borders_outerH=True, borders_innerV=True, borders_innerH=True,
                        borders_outerV=True,
                        width=int(dpg.get_viewport_client_width() / 2),
                        height=int(dpg.get_viewport_client_height() / 2)):
-            for x in range(6):
-                dpg.add_table_column()
+            dpg.add_table_column(label='Tickers')
+            dpg.add_table_column(label='Open')
+            dpg.add_table_column(label='High')
+            dpg.add_table_column(label='Close')
+            dpg.add_table_column(label='Low')
+            dpg.add_table_column(label='Volume')
 
             counter = 0
             place_field = True
@@ -119,7 +123,7 @@ def update_stock(sender):
                         else:
                             dpg.add_text("")
                         counter += 1
-'''
+
 
 with dpg.window(tag="Home"):
     # create plot
@@ -177,7 +181,7 @@ with dpg.window(tag="Home"):
 
 
 dpg.create_viewport(title='Group A App', width=1080, height=720)
-#open_landing()
+open_landing()
 dpg.setup_dearpygui()
 dpg.show_viewport()
 dpg.set_primary_window("Home", True)
