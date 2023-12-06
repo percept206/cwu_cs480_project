@@ -13,7 +13,7 @@ class ParserJSON(BaseParser):
         Parses a JSON file, converting it into a dictionary.
 
         Parameters:
-            json_data (file): JSON file to be parsed
+            json_data (object): JSON data to be parsed, particularly from a request-libs request.
         Returns:
             dictionary: A dictionary containing JSON data
         """
