@@ -1,10 +1,10 @@
 import requests
 
-from cwu_cs480_project.parser import BaseParser
-from cwu_cs480_project.database_manager import DatabaseManager
+from .parser import BaseParser
+from database_manager import DatabaseManager
 from datetime import datetime
 
-from cwu_cs480_project.parser_json import ParserJSON
+from parser_json import ParserJSON
 
 
 class ParserDB(BaseParser):

@@ -2,7 +2,7 @@ import re
 
 import requests
 
-from cwu_cs480_project.parser import BaseParser
+from parser import BaseParser
 import json
 
 

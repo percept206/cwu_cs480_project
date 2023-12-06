@@ -9,6 +9,32 @@ summary_view_fields = ["52WeekHigh", "52WeekLow", "Beta", "PriceToBookRatio", "D
                        "PriceToSalesRatioTTM", "EBITDA", "EVtoEBITDA", "ProfitMargin", "OperatingMarginTTM",
                        "ReturnOnEquityTTM", "PERatio", "AnalystTargetPrice"]
 
+tooltips = [
+    "Highest Price in 52 Weeks",
+    "Lowest Price in 52 Weeks",
+    "Measure of how volatile the stock is compared to the S&P 500 index, Higher indicates more volatility",
+    "Share price / book value per share: < 1 may signal undervaluation, > 1 trading at a premium",
+    "Dividend payout per share",
+    "percentage of dividend payout compared to stock price relative to the year",
+    "Total value of all shares outstanding",
+    "total amount of shares in existence",
+    "Earnings per share",
+    "Quarterly Earnings compared year over year",
+    "Revenue per share during the last 12 months",
+    "Revenue in last 12 months",
+    "Quarterly revenue compared year over year",
+    "Enterprise Value / Revenue",
+    "Gross Profit in last 12 months",
+    "Price to Sales in last 12 months",
+    "Earnings Before Income Tax Depreciation and Amortization",
+    "Enterpise Value to EBITDA",
+    "Profit Margin, how many cents of profit generated for each dollar of sales",
+    "Operating Margin in the last 12 months",
+    'Return on Equity in the last 12 months',
+    "Price to Equity Ratio",
+    "Analyst Target Price"
+]
+
 dpg.create_context()
 
 hist_data = ret.daily_hist(stock)
@@ -64,11 +90,14 @@ def update_summ(sender) :
 
     counter = 0
     place_field = True
+
     for i in range(0, 8):
         with dpg.table_row(parent="summ_table", tag=f"row_{i}"):
             for j in range(0, 6):
                 if place_field and counter < 23:
-                    dpg.add_text(f"{summary_view_fields[counter]}")
+                    dpg.add_text(f"{summary_view_fields[counter]}", tag=f"{counter}")
+                    with dpg.tooltip(parent=f"{counter}"):
+                        dpg.add_text(tooltips[counter])
                     place_field = False
                 elif counter < 23:
                     if counter == 5:
@@ -100,7 +129,7 @@ def update_stock(sender):
 # Opens landing page
 def open_landing():
     with dpg.font_registry():
-        default_font = dpg.add_font("ProggyClean.ttf", 24)
+        default_font = dpg.add_font("assets/calibri.ttf", 24)
 
     with dpg.window(popup=True, autosize=False, no_resize=True, no_move=True,
                     pos=[0, 0], tag='Landing'):
@@ -120,7 +149,7 @@ def open_landing():
             for i in range(len(ret.tickers)):
                 with dpg.table_row():
                     current_stock = ret.tickers[int(counter/6)]
-                    stock_info = ret.daily_hist(current_stock)
+                    stock_info = ret.daily_hist(current_stock, True)
                     for j in range(0, 6):
                         if place_field and counter < len(ret.tickers) * 6:
                             dpg.add_button(label=f"{current_stock}", callback=select_stock,
@@ -175,7 +204,9 @@ with dpg.window(tag="Home"):
             with dpg.table_row(parent="summ_table", tag=f"row_{i}"):
                 for j in range(0, 6):
                     if place_field and counter < 23:
-                        dpg.add_text(f"{summary_view_fields[counter]}")
+                        dpg.add_text(f"{summary_view_fields[counter]}", tag=f"{counter}")
+                        with dpg.tooltip(parent=f"{counter}"):
+                            dpg.add_text(tooltips[counter])
                         place_field = False
                     elif counter < 23:
                         # amount of valid fields
