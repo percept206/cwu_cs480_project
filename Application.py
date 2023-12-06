@@ -85,6 +85,12 @@ def update_summ(sender) :
                     dpg.add_text("")
 
 
+# Ensures landing closes when stock selected
+def select_stock(sender):
+    dpg.configure_item("Landing", show=False)
+    update_stock(sender)
+
+
 # Updates the currently selected stock
 def update_stock(sender):
     update_graph(sender)
@@ -94,11 +100,11 @@ def update_stock(sender):
 # Opens landing page
 def open_landing():
     with dpg.window(popup=True, autosize=False, no_resize=True, no_move=True,
-                    pos=[int(dpg.get_viewport_client_width() / 4), int(dpg.get_viewport_client_height() / 4)]):
+                    pos=[0, 0], tag='Landing'):
         with dpg.table(header_row=True, borders_outerH=True, borders_innerV=True, borders_innerH=True,
                        borders_outerV=True,
-                       width=int(dpg.get_viewport_client_width() / 2),
-                       height=int(dpg.get_viewport_client_height() / 2)):
+                       width=int(dpg.get_viewport_client_width()),
+                       height=int(dpg.get_viewport_client_height())):
             dpg.add_table_column(label='Tickers')
             dpg.add_table_column(label='Open')
             dpg.add_table_column(label='High')
@@ -114,7 +120,9 @@ def open_landing():
                     stock_info = ret.daily_hist(current_stock)
                     for j in range(0, 6):
                         if place_field and counter < len(ret.tickers) * 6:
-                            dpg.add_button(label=f"{current_stock}", callback=update_stock)
+                            dpg.add_button(label=f"{current_stock}", callback=select_stock,
+                                           height=int(dpg.get_viewport_client_height() / 20),
+                                           width=int(dpg.get_viewport_client_width() / 6))
                             place_field = False
                         elif counter < 120:
                             dpg.add_text(f"{stock_info[counter % 6][0]}")
