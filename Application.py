@@ -55,7 +55,7 @@ for x in hist_data[0]:
 
     epoch = int(time.mktime(time.strptime(x, "%Y-%m-%d"))) + DAY_OFFSET
     if epoch > 1699142400:
-        epoch -= 3600
+        epoch -= 3600 # adjust for DST
 
     date_to_epoch.append(epoch)
 
@@ -94,12 +94,12 @@ def update_summ(sender) :
     for i in range(0, 8):
         with dpg.table_row(parent="summ_table", tag=f"row_{i}"):
             for j in range(0, 6):
-                if place_field and counter < 23:
+                if place_field and counter < 23: # populate table with fields
                     dpg.add_text(f"{summary_view_fields[counter]}", tag=f"{counter}")
                     with dpg.tooltip(parent=f"{counter}"):
                         dpg.add_text(tooltips[counter])
                     place_field = False
-                elif counter < 23:
+                elif counter < 23: # populate table with corresponding values
                     if counter == 5:
                         dpg.add_text(f"{new_values[counter]:.4%}")
                     elif counter == 9 or counter == 12:
@@ -117,6 +117,7 @@ def update_summ(sender) :
 # Ensures landing closes when stock selected
 def select_stock(sender):
     dpg.configure_item("Landing", show=False)
+    dpg.configure_item("Home", show=True)
     update_stock(sender)
 
 
@@ -167,7 +168,7 @@ def open_landing():
                         counter += 1
 
 
-with dpg.window(tag="Home"):
+with dpg.window(tag="Home", show=False):
     # create plot
     with dpg.plot(label="Candle Series (Daily)", height=400, width=-1):
         dpg.add_plot_legend()
@@ -203,13 +204,13 @@ with dpg.window(tag="Home"):
         for i in range(0, 8):
             with dpg.table_row(parent="summ_table", tag=f"row_{i}"):
                 for j in range(0, 6):
-                    if place_field and counter < 23:
+                    if place_field and counter < 23: # populate table with fields
                         dpg.add_text(f"{summary_view_fields[counter]}", tag=f"{counter}")
                         with dpg.tooltip(parent=f"{counter}"):
                             dpg.add_text(tooltips[counter])
                         place_field = False
                     elif counter < 23:
-                        # amount of valid fields
+                        # populate table with values
                         if counter == 5:
                             dpg.add_text(f"{details_values[counter]:.4%}")
                         elif counter == 9 or counter == 12:
