@@ -99,6 +99,9 @@ def update_stock(sender):
 
 # Opens landing page
 def open_landing():
+    with dpg.font_registry():
+        default_font = dpg.add_font("ProggyClean.ttf", 24)
+
     with dpg.window(popup=True, autosize=False, no_resize=True, no_move=True,
                     pos=[0, 0], tag='Landing'):
         with dpg.table(header_row=True, borders_outerH=True, borders_innerV=True, borders_innerH=True,
@@ -123,9 +126,11 @@ def open_landing():
                             dpg.add_button(label=f"{current_stock}", callback=select_stock,
                                            height=int(dpg.get_viewport_client_height() / 20),
                                            width=int(dpg.get_viewport_client_width() / 6))
+                            dpg.bind_font(default_font)
                             place_field = False
                         elif counter < 120:
                             dpg.add_text(f"{stock_info[counter % 6][0]}")
+                            dpg.bind_font(default_font)
                             if counter % 6 == 5:
                                 place_field = True
                         else:
