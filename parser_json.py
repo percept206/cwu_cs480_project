@@ -35,7 +35,7 @@ class ParserJSON(BaseParser):
                 return data
 
         def convert_string_numbers(data):
-            number_pattern = r"-?\d+"
+            number_pattern = r"-?\d+(\.\d+)?"
 
             if isinstance(data, dict):
                 return {k: convert_string_numbers(v) for k, v in data.items()}
@@ -43,15 +43,17 @@ class ParserJSON(BaseParser):
                 return [convert_string_numbers(item) for item in data]
             elif isinstance(data, str):
                 if re.fullmatch(number_pattern, data):
-                    return int(data)
-
+                    try:
+                        return int(data)
+                    except ValueError:
+                        return float(data)
                 return data
             else:
                 return data
 
         resultA = replace_none_with_zero(json_data)
         resultB = convert_string_numbers(resultA)
-        print(resultB)
+        #print(resultB)
         return resultB
 
         pass
@@ -60,8 +62,8 @@ class ParserJSON(BaseParser):
         pass
 
 
-#r = requests.get("https://www.alphavantage.co/query?function=INCOME_STATEMENT&symbol=IBM&apikey=demo")
-#data = r.json()
+r = requests.get("https://www.alphavantage.co/query?function=OVERVIEW&symbol=IBM&apikey=demo")
+data = r.json()
 
-#JSONParser = ParserJSON()
-#JSONParser.parse_from_json(data)
+JSONParser = ParserJSON()
+JSONParser.parse_from_json(data)
