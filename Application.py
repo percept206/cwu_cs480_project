@@ -36,7 +36,7 @@ tooltips = [
 ]
 
 dpg.create_context()
-
+dpg.create_viewport(title='Group A App', width=1080, height=720)
 hist_data = ret.daily_hist(stock)
 hist_data[0].reverse()
 hist_data[1].reverse()
@@ -120,17 +120,21 @@ def select_stock(sender):
     dpg.configure_item("Home", show=True)
     update_stock(sender)
 
-
+#Switching from home to landing page
+def select_landing(sender):
+    dpg.configure_item("Landing", show=True)
+    dpg.configure_item("Home", show=False)
+    update_stock(sender)
 # Updates the currently selected stock
 def update_stock(sender):
     update_graph(sender)
     update_summ(sender)
 
-
+#def switch()
 # Opens landing page
 def open_landing():
     with dpg.font_registry():
-        default_font = dpg.add_font("assets/calibri.ttf", 24)
+        default_font = dpg.add_font("OpenSans-Regular.ttf", 24)
 
     with dpg.window(popup=True, autosize=False, no_resize=True, no_move=True,
                     pos=[0, 0], tag='Landing'):
@@ -150,12 +154,13 @@ def open_landing():
             for i in range(len(ret.tickers)):
                 with dpg.table_row():
                     current_stock = ret.tickers[int(counter/6)]
-                    stock_info = ret.daily_hist(current_stock, True)
+                    stock_info = ret.daily_hist(current_stock)
                     for j in range(0, 6):
                         if place_field and counter < len(ret.tickers) * 6:
                             dpg.add_button(label=f"{current_stock}", callback=select_stock,
                                            height=int(dpg.get_viewport_client_height() / 20),
                                            width=int(dpg.get_viewport_client_width() / 6))
+
                             dpg.bind_font(default_font)
                             place_field = False
                         elif counter < 120:
@@ -184,10 +189,13 @@ with dpg.window(tag="Home", show=False):
 
     # Doesn't work as intended, will try to find out how to get a proper menu
     with dpg.menu_bar():
+        #button to go back to landing page
+        dpg.add_button(label="Landing Page", callback=select_landing)
         with dpg.menu(label="Tickers"):
             # Loop through tickers and add them to the menu
             for ticker in ret.tickers:
                 dpg.add_menu_item(label=ticker, tag=ticker, callback=update_stock)
+
 
     with dpg.table(borders_outerH=True, borders_innerV=True, borders_innerH=True, borders_outerV=True,
                    tag="summ_table"):
@@ -225,7 +233,7 @@ with dpg.window(tag="Home", show=False):
                         dpg.add_text("")
 
 
-dpg.create_viewport(title='Group A App', width=1080, height=720)
+
 open_landing()
 dpg.setup_dearpygui()
 dpg.show_viewport()
