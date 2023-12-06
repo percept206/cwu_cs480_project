@@ -134,7 +134,7 @@ def update_stock(sender):
 # Opens landing page
 def open_landing():
     with dpg.font_registry():
-        default_font = dpg.add_font("OpenSans-Regular.ttf", 24)
+        default_font = dpg.add_font("calibri.ttf", 24)
 
     with dpg.window(popup=True, autosize=False, no_resize=True, no_move=True,
                     pos=[0, 0], tag='Landing'):
