@@ -10,6 +10,10 @@ import sys
 import io
 import csv
 
+import parser_database
+import parser_json
+import database_manager
+
 # read API key for usage from locally stored ./.env file,+
 API_KEY = open(".env", 'r', encoding='utf-8').readline()
 API_URL = 'https://www.alphavantage.co/query?'
@@ -21,6 +25,24 @@ reader = csv.reader(tickercsv, delimiter=',', quotechar='"')
 tickers = reader.__next__()
 tickercsv.close()
 
+def print_tickers():
+    print(tickers)
+
+
+def db_populate_dailyHist():
+
+    dbm = database_manager.DatabaseManager("financial_db.db")
+    json_parser = parser_json.ParserJSON()
+    db_parser = parser_database.ParserDB()
+
+    for x in range(len(tickers)):
+
+        r = requests.get(API_URL + 'function=TIME_SERIES_DAILY&symbol=' + tickers[x] + "&apikey=" + API_KEY) # each api call for each ticker
+        data = r.json()
+        parsedJSON = json_parser.parse_from_json(data)
+        cik = db_parser.ticker_to_cik(tickers[x])
+        date = "2023-12-06"
+        db_parser.parse_into_daily_time_series(dbm, (cik, date), parsedJSON)
 
 
 def valid_ticker(ticker):
@@ -242,11 +264,18 @@ def main(type, ticker):
             weekly_hist(ticker)
         case 'gm':
             monthly_hist(ticker)
+        case 'db':
+            db_populate_dailyHist()
 
 
 if __name__ == "__main__":
 
     n = len(sys.argv)
+
+    if (n == 2):
+        if sys.argv[1] == "db":
+            main(sys.argv[1], "")
+
     if (n != 3 ):
         raise Exception("Invalid amount of arguments")
 
