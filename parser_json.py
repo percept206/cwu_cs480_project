@@ -13,6 +13,7 @@ class ParserJSON(BaseParser):
     def parse(self, data):
         pass
 
+
     def parse_from_json(self, json_data):
         """
         Parses a JSON file, converting it into a dictionary. Additionally, replace all 'None' and "None" types with zero
@@ -58,7 +59,9 @@ class ParserJSON(BaseParser):
 
         pass
 
+
     def parse_to_json(self, data):
+
         pass
 
 

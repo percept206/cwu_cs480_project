@@ -11,9 +11,11 @@ class ParserDB(BaseParser):
     def __init__(self):
         pass
 
+
     def parse(self, data):
         pass
 
+    
     def __parse_from_db__(self, database, table, primary_key, date_column_name):
         """
         Parses data from the database and converts it into a dictionary.
@@ -34,7 +36,10 @@ class ParserDB(BaseParser):
             print("date must be in YYYY-MM-DD format.")
             return None
 
-        query = f"SELECT * FROM {table} WHERE cik = ? AND {date_column_name} = ?"
+        if(date_column_name is not None):
+            query = f"SELECT * FROM {table} WHERE cik = ? AND {date_column_name} = ?"
+        else:
+            query = f"SELECT * FROM {table} WHERE cik = ?"
 
         rows = database.query_data(query, primary_key)
 
@@ -44,10 +49,11 @@ class ParserDB(BaseParser):
         inspect = rows[0]
         data_dict = {k: inspect[k] for k in inspect.keys()}
 
-        #print(data_dict)
+        # print(data_dict)
 
         return data_dict
 
+    
     def __parse_to_db__(self, database, table, primary_key, data):
         """
         Parses a dictionary/tuple given some primary key(s) and pushes it into the database
@@ -57,17 +63,19 @@ class ParserDB(BaseParser):
             table (str): Name of the table data is being inserted into
             primary_key (tuple): Tuple in the form of (cik, date).
                 cik is an integer. date is a string in the format of YYYY-MM-DD.
-            data (dict): Data (as a dictionary) that's being pushed into the database. Data is first verified before commit.
+            data (dict): Data (as a dictionary) that's being pushed into the database.
+                Data is first verified before commit.
         Returns:
             bool: Whether the parse was a success, and an error message in the event parse failed.
         """
 
         # Make sure date is in valid iso format first
-        try:
-            datetime.fromisoformat(primary_key[1])
-        except ValueError:
-            print("date must be in YYYY-MM-DD format.")
-            return False, None
+        if(primary_key[1] != None):
+            try:
+                datetime.fromisoformat(primary_key[1])
+            except ValueError:
+                print("date must be in YYYY-MM-DD format.")
+                return False, None
 
         formatted_data = data.copy()
         formatted_data["cik"] = primary_key[0]
@@ -86,8 +94,8 @@ class ParserDB(BaseParser):
 
         insert_data = tuple(formatted_data[column] for column in data)
 
-        #print(insert_sql)
-        #print(insert_data)
+        print(insert_sql)
+        print(insert_data)
 
         try:
             database.insert_data(insert_sql, insert_data)
@@ -95,6 +103,7 @@ class ParserDB(BaseParser):
         except Exception as e:
             return False, str(e)
 
+    
     def parse_into_monthly_time_series(self, database, primary_key, data):
         """
         Parses monthly time series information into the database. Probably should be its own class.
@@ -128,6 +137,7 @@ class ParserDB(BaseParser):
 
         return self.__parse_to_db__(database, db_table, primary_key, processedData)
 
+    
     def parse_into_daily_time_series(self, database, primary_key, data):
         """
         Parses daily time series information into the database.
@@ -136,12 +146,13 @@ class ParserDB(BaseParser):
             database (databaseManager): Database to push data into
             primary_key (tuple): Tuple in the form of (cik, date).
                 cik is an integer. date is a string in the format of YYYY-MM-DD.
-            data (dict): Data (as a dictionary) that's being pushed into the database. Data is first verified before commit.
+            data (dict): Data (as a dictionary) that's being pushed into the database.
+                Data is first verified before commit.
         Returns:
             bool: Whether the parse was a success, and an error message in the event parse failed.
         """
         # First check and make sure we're on the right file.
-        if (data["Meta Data"] == None or "Daily" not in data["Meta Data"]["1. Information"]):
+        if data["Meta Data"] is None or "Daily" not in data["Meta Data"]["1. Information"]:
             return False, None
 
         db_table = "DailyTimeSeries"
@@ -164,18 +175,88 @@ class ParserDB(BaseParser):
 
         return self.__parse_to_db__(database, db_table, primary_key, processed_data)
 
+    
     def parse_from_daily_time_series(self, database, primary_key):
         return self.__parse_from_db__(database, "DailyTimeSeries", primary_key, "date")
 
+    
+    def parse_into_company(self, database, primary_key, data):
+        """
+        Parses company information into the database.
 
-#r = requests.get("https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=IBM&apikey=demo")
-#data = r.json()
+        Parameters:
+            database (databaseManager): Database to push data into
+            primary_key (tuple): cik, or the primary key to use for identification.
+            data (dict): Data (as a dictionary) that's being pushed into the database.
+                Data is first verified before commit.
+        Returns:
+            bool: Whether the parse was a success, and an error message in the event parse failed.
+        """
+        # First check and make sure we're on the right file.
+        if data["Symbol"] is None:
+            return False, None
+        if primary_key[0] != data["CIK"]:
+            raise ValueError("CIK used as primary key does not match CIK of company!!")
 
-#JSONParser = ParserJSON()
-#parsedJSON = JSONParser.parse_from_json(data)
+        db_table = "Company"
 
-#db_manager = DatabaseManager("financial_db_test.db")
+        processed_data = {"symbol":data["Symbol"],
+                          "name":data["Name"],
+                          "cik":data["CIK"],
+                          "lastModified":str(datetime.now())}
 
-#DBParser = ParserDB()
+        return self.__parse_to_db__(database, db_table, primary_key, processed_data)
+
+    
+    def parse_from_company(self,database, primary_key):
+        return self.__parse_from_db__(database,"Company",primary_key,None)
+
+    
+    def cik_to_ticker(self,database, cik):
+        """
+        Converts the CIK (Central Index Key) into a ticker
+        Parameters:
+            database (databaseManager): database to pull information from
+            cik (int): cik to convert from
+        Returns:
+            ticker (str): ticker from cik
+        """
+        query = f"SELECT symbol FROM Company WHERE cik = ?"
+
+        rows = database.query_data(query,(cik,)) # Need to convert the cik into a tuple due to issues.
+        if(len(rows) > 1):
+            raise ValueError("More than one row returned for the given primary key!")
+        data = rows[0]
+        return data["symbol"]
+
+    def ticker_to_cik(self,database, symbol):
+        """
+        Converts the CIK (Central Index Key) into a ticker
+        Parameters:
+            database (databaseManager): database to pull information from
+            symbol (str): ticker to convert from
+        Returns:
+            cik (int): cik from ticker
+        """
+        query = f"SELECT cik FROM Company WHERE symbol = ?"
+
+        rows = database.query_data(query,(symbol,))
+        if(len(rows) > 1):
+            raise ValueError("More than one row returned for the given key! CIK/Symbol Mismatch!")
+        data = rows[0]
+        return data["cik"]
+
+r = requests.get("https://www.alphavantage.co/query?function=OVERVIEW&symbol=IBM&apikey=demo")
+data = r.json()
+
+JSONParser = ParserJSON()
+parsedJSON = JSONParser.parse_from_json(data)
+
+db_manager = DatabaseManager("financial_db_test.db")
+
+DBParser = ParserDB()
 #DBParser.parse_into_daily_time_series(db_manager, (51143, list(parsedJSON["Time Series (Daily)"])[1]), parsedJSON)
 #print(DBParser.parse_from_daily_time_series(db_manager, (51143, "2023-12-05")))
+#DBParser.parse_into_company(db_manager,(51143,None),parsedJSON)
+#print(DBParser.cik_to_ticker(db_manager,51143))
+#print(DBParser.ticker_to_cik(db_manager,"IBM"))
