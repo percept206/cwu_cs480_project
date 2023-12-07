@@ -36,12 +36,16 @@ def db_populate_dailyHist():
     db_parser = parser_database.ParserDB()
 
     for x in range(len(tickers)):
+        cik = db_parser.ticker_to_cik(dbm, tickers[x])
+        date = "2023-12-06"
+
+        if db_parser.parse_from_daily_time_series(dbm, (cik, date)):
+            continue
 
         r = requests.get(API_URL + 'function=TIME_SERIES_DAILY&symbol=' + tickers[x] + "&apikey=" + API_KEY) # each api call for each ticker
         data = r.json()
         parsedJSON = json_parser.parse_from_json(data)
-        cik = db_parser.ticker_to_cik(tickers[x])
-        date = "2023-12-06"
+
         db_parser.parse_into_daily_time_series(dbm, (cik, date), parsedJSON)
 
 

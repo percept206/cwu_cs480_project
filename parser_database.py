@@ -42,12 +42,18 @@ class ParserDB(BaseParser):
             query = f"SELECT * FROM {table} WHERE cik = ?"
 
         rows = database.query_data(query, primary_key)
+        print(primary_key)
+        print(rows)
 
         data_dict = {}
         if len(rows) > 1:
             raise ValueError("More than one row returned for the given primary keys!")
-        inspect = rows[0]
-        data_dict = {k: inspect[k] for k in inspect.keys()}
+        elif len(rows) == 0:
+            print("Row not found for given primary key!")
+            return data_dict
+        else:
+            inspect = rows[0]
+            data_dict = {k: inspect[k] for k in inspect.keys()}
 
         # print(data_dict)
 
@@ -152,6 +158,11 @@ class ParserDB(BaseParser):
             bool: Whether the parse was a success, and an error message in the event parse failed.
         """
         # First check and make sure we're on the right file.
+        try:
+            print(list(data["Meta Data"]))
+        except KeyError:
+            return False, None
+
         if data["Meta Data"] is None or "Daily" not in data["Meta Data"]["1. Information"]:
             return False, None
 
@@ -226,12 +237,14 @@ class ParserDB(BaseParser):
         rows = database.query_data(query,(cik,)) # Need to convert the cik into a tuple due to issues.
         if(len(rows) > 1):
             raise ValueError("More than one row returned for the given primary key!")
+        elif (len(rows) == 0):
+            raise ValueError("No rows found for the given CIK!")
         data = rows[0]
         return data["symbol"]
 
     def ticker_to_cik(self,database, symbol):
         """
-        Converts the CIK (Central Index Key) into a ticker
+        Converts a ticker into its associated CIK (Central Index Key)
         Parameters:
             database (databaseManager): database to pull information from
             symbol (str): ticker to convert from
@@ -243,6 +256,9 @@ class ParserDB(BaseParser):
         rows = database.query_data(query,(symbol,))
         if(len(rows) > 1):
             raise ValueError("More than one row returned for the given key! CIK/Symbol Mismatch!")
+        elif(len(rows) == 0):
+            raise ValueError("No rows found for the given ticker!")
+
         data = rows[0]
         return data["cik"]
 
