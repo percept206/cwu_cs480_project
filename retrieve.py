@@ -49,6 +49,7 @@ def db_populate_dailyHist():
         db_parser.parse_into_daily_time_series(dbm, (cik, date), parsedJSON)
 
 
+
 def valid_ticker(ticker):
     valid_ticker = False
 
@@ -150,6 +151,32 @@ def intraday_hist(ticker):
     intervals = [dates, opens, closes, lows, highs, vol]
 
     return intervals
+
+def daily_histFromDB(ticker):
+
+    dbm = database_manager.DatabaseManager("financial_db.db")
+    json_parser = parser_json.ParserJSON()
+    db_parser = parser_database.ParserDB()
+
+    cik = db_parser.ticker_to_cik(dbm, ticker)
+    date = "2023-12-06"
+
+    dict = db_parser.parse_from_daily_time_series(dbm, (cik, date))
+
+    dates = [dict['date']]
+    opens = [dict['open']]
+    highs = [dict['high']]
+    lows = [dict['low']]
+    closes = [dict['close']]
+    vol = [dict['volume']]
+
+    intervals = [dates, opens, highs, lows, closes, vol]
+
+    print(intervals)
+    return intervals
+
+
+
 
 def daily_hist(ticker):
 

@@ -134,7 +134,7 @@ def update_stock(sender):
 # Opens landing page
 def open_landing():
     with dpg.font_registry():
-        default_font = dpg.add_font("calibri.ttf", 24)
+        default_font = dpg.add_font("assets\calibri.ttf", 24)
 
     with dpg.window(popup=True, autosize=False, no_resize=True, no_move=True,
                     pos=[0, 0], tag='Landing'):
@@ -153,8 +153,9 @@ def open_landing():
             place_field = True
             for i in range(len(ret.tickers)):
                 with dpg.table_row():
+
                     current_stock = ret.tickers[int(counter/6)]
-                    stock_info = ret.daily_hist(current_stock)
+                    stock_info = ret.daily_histFromDB(current_stock)
                     for j in range(0, 6):
                         if place_field and counter < len(ret.tickers) * 6:
                             dpg.add_button(label=f"{current_stock}", callback=select_stock,
